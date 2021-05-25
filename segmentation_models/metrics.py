@@ -3,6 +3,8 @@ from .base import functional as F
 
 SMOOTH = 1e-5
 
+import tensorflow as tf
+from tensorflow import keras
 
 class IOUScore(Metric):
     r""" The `Jaccard index`_, also known as Intersection over Union and the Jaccard similarity coefficient
@@ -61,6 +63,20 @@ class IOUScore(Metric):
             threshold=self.threshold,
             **self.submodules
         )
+
+
+class meanIoU(tf.keras.metrics.MeanIoU):
+  def __init__(self,
+               y_true=None,
+               y_pred=None,
+               num_classes=None,
+               name=None,
+               dtype=None):
+    super(meanIoU, self).__init__(num_classes = num_classes,name=name, dtype=dtype)
+
+  def update_state(self, y_true, y_pred, sample_weight=None):
+    y_pred = tf.math.argmax(y_pred, axis=-1)
+    return super().update_state(y_true, y_pred, sample_weight)
 
 
 class FScore(Metric):
